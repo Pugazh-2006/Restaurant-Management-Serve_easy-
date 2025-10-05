@@ -1,7 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request,redirect 
 import os
-
-# Point Flask at the subfolder where your templates and static files live
+import sqlite3
 BASE = os.path.join(os.path.dirname(__file__), 'Restaurant-Management-Serve_easy-')
 
 app = Flask(
@@ -11,8 +10,23 @@ app = Flask(
 )
 
 
-@app.route('/')
+@app.route('/', methods=['GET','POST'])
 def login():
+	if request.method == 'POST':
+		print("POST method triggered")
+		username = request.form['username']
+		password = request.form['password']
+
+		conn = sqlite3.connect('users.db')
+		cursor = conn.cursor()
+		cursor.execute("SELECT * FROM users WHERE username=? AND password=?", (username,password))
+		user = cursor.fetchone()
+		conn.close()
+
+		if user:
+			return " Login Successful!"
+		else:
+			return "Invalid credentials. Try again."
 	return render_template('login.html')
 
 
