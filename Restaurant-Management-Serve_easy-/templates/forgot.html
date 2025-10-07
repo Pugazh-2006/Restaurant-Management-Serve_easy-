@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>Recovering stage</title>
+    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+   <link href='https://cdn.boxicons.com/fonts/brands/boxicons-brands.min.css' rel='stylesheet'>
+   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="wraper">
+        <form method="POST" action="/forgot">
+            <h1> Forgot Password</h1>
+
+            <div class="input-box">
+                <input type="email" name="email" placeholder="Enter your registered email" required>
+                <i class='bx  bx-envelope-open'></i>
+            </div>
+
+            <button type="submit" class="btn">Recover</button>
+        </form>
+
+    </div>
+</body>
+</html>

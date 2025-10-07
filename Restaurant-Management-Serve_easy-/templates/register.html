@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login Page</title>
     <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <link href='https://cdn.boxicons.com/fonts/brands/boxicons-brands.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
@@ -20,6 +20,11 @@
             <div class=" input-box">
                 <input type="password" name="password" placeholder="password" required>
                 <i class='bx  bx-lock'  ></i>
+            </div>
+
+            <div class=" input-box">
+                <input type="email" name="email" placeholder="email" required>
+                <i class='bx  bx-envelope-open'></i> 
             </div>
 
             <button type="submit" class="btn"> Create Account</button>

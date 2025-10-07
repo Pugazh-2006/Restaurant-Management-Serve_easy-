@@ -34,6 +34,8 @@ def register():
 	if request.method == 'POST':
 		username = request.form['username']
 		password = request.form['password']
+		email = request.form['email']
+
 
 		conn = sqlite3.connect('users.db')
 		cursor = conn.cursor()
@@ -43,12 +45,32 @@ def register():
 			conn.close()
 			return "Username already exists. Try a different one."
 		
-		cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+		cursor.execute("INSERT INTO users (username, password, email) VALUES (?, ?, ?)", (username, password, email))
 		conn.commit()
 		conn.close()
 		return render_template('login.html', message="Registration Successful! Please Login.")
 
 	return render_template('register.html')
+
+@app.route('/forgot', methods=['GET', 'POST'])
+def forgot_password():
+	if request.method == 'POST':
+		email = request.form['email']
+
+		conn = sqlite3.connect('users.db')
+		cursor = conn.cursor()
+		cursor.execute("SELECT username,password FROM users WHERE email=?", (email,))
+		user = cursor.fetchone()
+		conn.close()
+
+		if user:
+			return f"Your username is {user[0]} and Your password is {user[1]}"
+		else:
+			return "No account found with that email."
+	return render_template('forgot.html')
+
+
+
 
 
 if __name__ == '__main__':
