@@ -110,4 +110,10 @@ body {
 .register-link p a:hover {
     text-decoration: underline;
 }
-
+/* regarding register page */
+.success {
+    color: #4CAF50;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
