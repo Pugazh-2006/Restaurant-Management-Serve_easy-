@@ -12,6 +12,7 @@ app.secret_key = 'your_secret_key'
 
 @app.route('/', methods=['GET','POST'])
 def login():
+	message = ''
 	if request.method == 'POST':
 		print("POST method triggered")
 		username = request.form['username']
@@ -78,7 +79,10 @@ def menu():
 	conn = sqlite3.connect('restaurant.db')
 	cursor = conn.cursor()
 	cursor.execute("SELECT * FROM menu_items")
-	items = cursor.fetchall()
+	items = []
+	for row in cursor.fetchall():
+		image = row[3].strip() if row[3] and row[3].strip() else 'masala_dosa.jpg'
+		items.append((row[0], row[1], row[2], image))
 	conn.close()
 	return render_template('menu.html', items=items)
 

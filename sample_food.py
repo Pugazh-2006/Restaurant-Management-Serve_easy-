@@ -2,6 +2,7 @@ import sqlite3
 conn = sqlite3.connect('restaurant.db')
 cursor = conn.cursor()
 
+cursor.execute("DELETE FROM menu_items")
 menu_data = [
     ("Masala Dosa", 60, "masala_dosa.jpg"),
     ("Panner Butter Masala", 150, "panner_masala.jpg"),
