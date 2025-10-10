@@ -1,5 +1,5 @@
 import sqlite3
-conn = sqlite3.connect('users.db')
+conn = sqlite3.connect('restaurant.db')
 cursor = conn.cursor()
 cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", ("admin", "1234"))
 conn.commit()

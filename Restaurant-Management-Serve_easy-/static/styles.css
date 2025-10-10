@@ -117,3 +117,62 @@ body {
     text-align: center;
     margin-bottom: 15px;
 }
+
+/* This is for menu page */
+
+.menu-page {
+    padding: 20px;
+    text-align: center;
+    background: linear-gradient(to right, #ffecd2, #fcb69f);
+    min-height: 100vh;
+    width: 100%;
+}
+.menu-page h1 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.menu-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.menu-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 200px;
+    padding: 15px;
+    transition: transform 0.2s;
+}
+
+.menu-card:hover {
+    transform: scale(1.05);
+}
+
+.menu-card img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.menu-card p {
+    font-size: 16px;
+    color: #555;
+}
+
+.menu-card button {
+    background-color: #ff7043;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.menu-card button:hover {
+    background-color: #ff5722;
+}
