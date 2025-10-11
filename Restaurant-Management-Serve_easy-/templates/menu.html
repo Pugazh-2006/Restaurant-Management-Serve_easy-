@@ -10,12 +10,14 @@
 <body>
     <div class="menu-page">
         <h1>Welcome, {{ session['username'] }} 🍴</h1>
+        <label for="searchBar" class="search-label">🔍 Search your favorite dish:</label>
+        <input type="text" id="searchBar" placeholder="Search for a dish..." />
         <div class = "menu-container">
             {% for item in items %}
             <div class="menu-card">
                 <img src="{{ url_for('static', filename='images/' + item[3]) }}" alt="{{ item[1]  }}" >
                 <h2>{{ item[1]  }}</h2>
-                <p> {{ item[2] }}</p>
+                <p class="price"><span class="rupee">₹</span> {{ item[2] }}</p>
                 <form method="POST" action="/add_to_cart">
                     <input type="hidden" name="item_id" value="{{ item[0]}}">
                     <button type="submit">Add to Carts</button>
@@ -26,3 +28,16 @@
     </div>
 </body>
 </html>
+
+<script>
+    const searchBar = document.getElementById('searchBar');
+    searchBar.addEventListener('keyup', function() {
+        const query = searchBar.value.toLowerCase();
+        const cards = document.getElementsByClassName('menu-card');
+
+        for(let card of cards) {
+            const title = card.querySelector('h2').textContent.toLowerCase();
+            card.style.display = title.includes(query) ? 'block' : 'none';
+        }
+    } );
+</script>
