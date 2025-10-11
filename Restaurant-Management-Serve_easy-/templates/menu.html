@@ -9,7 +9,12 @@
 </head>
 <body>
     <div class="menu-page">
-        <h1>Welcome, {{ session['username'] }} 🍴</h1>
+        <div class="menu-header">
+            <p>Welcome, {{ session['username'] }}!</p>
+            <form method="GET" action="/logout" style="display:inline;">
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
         <label for="searchBar" class="search-label">🔍 Search your favorite dish:</label>
         <input type="text" id="searchBar" placeholder="Search for a dish..." />
         <a href="/cart" class="cart-link">🛒 View Cart

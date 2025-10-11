@@ -126,8 +126,65 @@ def cart():
 	conn.close()
 	return render_template('cart.html', items=cart_items, total=total)
 
+@app.route('/update_cart', methods=['POST'])
+def update_cart():
+	item_id = request.form['item_id'].strip()
+	action = request.form['action']
 
+	if'cart' in session and item_id in session['cart']:
+		if action == 'increase':
+			session['cart'][item_id] += 1
+		elif action == 'decrease':
+			session['cart'][item_id] -=1
+			if session['cart'][item_id] <= 0:
+				del session['cart'][item_id]
+		session.modified = True
 
+	return redirect('/cart')
+
+@app.route('/remove_from_cart', methods=['POST'])
+def remove_from_cart():
+	item_id = request.form['item_id'].strip()
+	if 'cart' in session and item_id in session['cart']:
+			del session['cart'][item_id]
+			session.modified = True
+	return redirect('/cart')
+
+@app.route('/logout')
+def logout():
+	session.clear()
+	return redirect('/')
+
+@app.route('/reserve_seat', methods=["GET"])
+def show_seats():
+	conn = sqlite3.connect('restaurant.db')
+	cursor = conn.cursor()
+	cursor.execute("SELECT seat_id, status FROM seats")
+	seats = [{'seat_id': row[0], 'status': row[1]} for row in cursor.fetchall()]
+	conn.close()
+	return render_template('reserve_seat.html', seats=seats)
+
+@app.route('/reserve_seat', methods=['POST'])
+def reserve_seats():
+	seat_id = request.form.get('seat_id')
+	user_id = session.get('user_id')
+
+	if not seat_id:
+		return "No seat selected. Please go back and choose a seat."
+	
+	conn = sqlite3.connect('restaurant.db')
+	cursor = conn.cursor()
+
+	cursor.execute("SELECT status FROM seats WHERE seat_id = ?", (seat_id, ))
+	status = cursor.fetchone()
+	if status and status[0] == 'available':
+		cursor.execute("UPDATE seats SET status = 'reserved', user_id = ? WHERE seat_id = ?", (user_id, seat_id))
+		conn.commit()
+		conn.close()
+		return "Seat reserved successfully!"
+	else:
+		conn.close()
+		return "Seat is already reserved. Please choose another."
 
 if __name__ == '__main__':
 	app.run(debug=True)

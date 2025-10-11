@@ -21,9 +21,11 @@ cursor.execute('''
 
 cursor.execute('''
                CREATE TABLE IF NOT EXISTS seats (
-               id INTEGER PRIMARY KEY AUTOINCREMENT,
-               seat_number TEXT NOT NULL,
-               is_reserved BOOLEAN NOT NULL DEFAULT 0)''')
+               seat_id INTEGER PRIMARY KEY,
+               status TEXT DEFAULT 'available',
+               user_id INTEGER,
+               FOREIGN KEY(user_id) REFERENCES users(id)
+               )''')
 
 cursor.execute('''
                CREATE TABLE IF NOT EXISTS orders (
@@ -32,6 +34,7 @@ cursor.execute('''
                seat_id INTEGER,
                total REAL,
                status TEXT,
+               created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                FOREIGN KEY(user_id) REFERENCES users(id),
                FOREIGN KEY(seat_id) REFERENCES seats(id)
                )

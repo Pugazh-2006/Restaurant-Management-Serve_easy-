@@ -15,9 +15,18 @@
                     <div class="cart-card">
                         <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{item.name}}">
                         <h2>{{ item.name}}</h2>
-                        <p>Quantity: {{ item.quantity}}</p>
                         <p>Price: ₹{{ item.price }}</p>
                         <p>Subtotal: ₹{{ item.subtotal }} </p>
+                        <form method="POST" action="/update_cart" style="display:inline;">
+                            <input type="hidden" name="item_id" value="{{ item.id}}">
+                            <button type="submit" name="action" value="decrease">-</button>
+                            <span>{{ item.quantity }} </span>
+                            <button type="submit" name="action" value="increase">+</button>
+                        </form>
+                        <form method="POST" action="/remove_from_cart" style="display:inline;">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <button type="submit">Remove</button>
+                        </form>
                     </div>
                 {% endfor %}
             </div>

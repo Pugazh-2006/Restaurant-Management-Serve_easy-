@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="seat-page">
+        <header class="page-header">
+            <h1>Welcome to ServeEasy</h1>
+        </header>
+        <h1>Select Your Seat</h1>
+        <form method="POST" action="/reserve_seat">
+            <p>Total seats loaded: {{seats|length }}</p>
+            {% if seats|length == 0 %}
+                <p>No seats available at the moment.</p>
+            {% endif %}
+            <div class="seat-grid">
+                {% for seat in seats %}
+                    <label class="seat {{ seat.status }}">
+                        <input type="radio" name="seat_id" value="{{ seat.seat_id }}" {% if seat.status != 'available' %}disabled{% endif %} required>
+                        Seat {{ seat.seat_id }}
+                    </label>
+                {% endfor %}
+            </div>
+            <button type="submit" class="reserve_button">Confirm Reservation</button>
+        </form>
+    </div>
+</body>
+</html>
