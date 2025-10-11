@@ -82,7 +82,8 @@ def menu():
 	items = []
 	for row in cursor.fetchall():
 		image = row[3].strip() if row[3] and row[3].strip() else 'masala_dosa.jpg'
-		items.append((row[0], row[1], row[2], image))
+		description = row[4] if len(row) > 4 else ''
+		items.append((row[0], row[1], row[2], image, description))
 	conn.close()
 	return render_template('menu.html', items=items)
 
@@ -90,9 +91,40 @@ def menu():
 def add_to_cart():
 	item_id = request.form['item_id']
 	if 'cart' not in session:
-		session['cart'] = []
-	session['cart'].append(item_id)
+		session['cart'] = {}
+	cart = session['cart']
+	cart[item_id] = cart.get(item_id, 0) + 1
+	session['cart'] = cart
 	return redirect('/menu')
+
+@app.route('/cart')
+def cart():
+	if 'cart' not in session or not session['cart']:
+		return render_template('cart.html',items=[], total=0)
+	
+	conn = sqlite3.connect('restaurant.db')
+	cursor = conn.cursor()
+
+	cart_items = []
+	total = 0
+
+	for item_id, quantity in session['cart'].items():
+		item_id = int(item_id)
+		cursor.execute("SELECT id, name, price, image FROM menu_items WHERE id = ?", (item_id, ))
+		item = cursor.fetchone()
+		if item:
+			subtotal = item[2] * quantity 
+			total += subtotal
+			cart_items.append({
+				'id' : item[0],
+				'name' : item[1],
+				'price' : item[2],
+				'image': item[3],
+				'quantity': quantity,
+				'subtotal': subtotal
+			})
+	conn.close()
+	return render_template('cart.html', items=cart_items, total=total)
 
 
 

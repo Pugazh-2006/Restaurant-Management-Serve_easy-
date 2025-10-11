@@ -12,11 +12,15 @@
         <h1>Welcome, {{ session['username'] }} 🍴</h1>
         <label for="searchBar" class="search-label">🔍 Search your favorite dish:</label>
         <input type="text" id="searchBar" placeholder="Search for a dish..." />
+        <a href="/cart" class="cart-link">🛒 View Cart
+            <span class="cart-count">({{ session['cart']|length if session.get('cart') else 0 }})</span>
+        </a>
         <div class = "menu-container">
             {% for item in items %}
             <div class="menu-card">
                 <img src="{{ url_for('static', filename='images/' + item[3]) }}" alt="{{ item[1]  }}" >
                 <h2>{{ item[1]  }}</h2>
+                <p class="description"> {{ item[4] }}</p>
                 <p class="price"><span class="rupee">₹</span> {{ item[2] }}</p>
                 <form method="POST" action="/add_to_cart">
                     <input type="hidden" name="item_id" value="{{ item[0]}}">

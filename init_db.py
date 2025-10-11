@@ -16,7 +16,8 @@ cursor.execute('''
                id INTEGER PRIMARY KEY AUTOINCREMENT,
                name TEXT NOT NULL,
                price REAL NOT NULL,
-               image TEXT)''')
+               image TEXT,
+               description TEXT)''')
 
 cursor.execute('''
                CREATE TABLE IF NOT EXISTS seats (

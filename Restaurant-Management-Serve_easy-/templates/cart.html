@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="cart-page">
+        <h1>Your Cart 🛒</h1>
+        {% if items %}
+            <div class="cart-container">
+                {% for item in items %}
+                    <div class="cart-card">
+                        <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{item.name}}">
+                        <h2>{{ item.name}}</h2>
+                        <p>Quantity: {{ item.quantity}}</p>
+                        <p>Price: ₹{{ item.price }}</p>
+                        <p>Subtotal: ₹{{ item.subtotal }} </p>
+                    </div>
+                {% endfor %}
+            </div>
+        <h3>Total: ₹{{ total }}</h3>
+        <a href="reserve_seat"><button>Proceed to Seat Reservation</button></a>
+    {% else %}
+            <p>Your cart is empty.</p>
+            {% endif %}
+        <a href="/menu" class="cart-link">← Back to Menu </a>
+    </div>
+</body>
+</html>
