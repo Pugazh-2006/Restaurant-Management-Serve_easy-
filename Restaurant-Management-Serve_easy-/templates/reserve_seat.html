@@ -6,7 +6,7 @@
     <title>Reservation</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
+<body class="reserve_body">
     <div class="seat-page">
         <header class="page-header">
             <h1>Welcome to ServeEasy</h1>
@@ -14,7 +14,8 @@
         <h1>Select Your Seat</h1>
         <form method="POST" action="/reserve_seat">
             <p>Total seats loaded: {{seats|length }}</p>
-            {% if seats|length == 0 %}
+            {% set available_seats = seats | selectattr('status', 'equalto', 'available' | list %)}
+            {% if available_seats | length == 0 %}
                 <p>No seats available at the moment.</p>
             {% endif %}
             <div class="seat-grid">
