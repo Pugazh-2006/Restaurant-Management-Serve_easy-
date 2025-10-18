@@ -17,7 +17,9 @@ cursor.execute('''
                name TEXT NOT NULL,
                price REAL NOT NULL,
                image TEXT,
-               description TEXT)''')
+               description TEXT,
+               type TEXT,
+               category TEXT)''')
 
 cursor.execute('''
                CREATE TABLE IF NOT EXISTS seats (

@@ -10,26 +10,60 @@
 <body>
     <div class="menu-page">
         <div class="menu-header">
-            <p>Welcome, {{ session['username'] }}!</p>
-            <form method="GET" action="/logout" style="display:inline;">
-                <button type="submit" class="logout-button">Logout</button>
-            </form>
+            <div class="header-left">
+                <p>Welcome, {{ session['username'] }}!</p>
+            </div>
+
+            <div class="header-center">
+                <label for="searchBar" class="">🔍 Search your favorite dish:</label>
+                <input type="text" id="searchBar" placeholder="Search for a dish..." />
+            </div>
+
+            <div class="header-right">
+                <form method="GET" action="/logout">
+                    <button type="submit" class="logout-button">Logout</button>
+                </form>
+
+                <a href="/cart" class="cart-link">🛒 View Cart
+                    <span class="cart-count">({{ session['cart']|length if session.get('cart') else 0 }})</span>
+                </a>
+
+                <div class="filter-buttons">
+                    <p><strong>Type:</strong></p>
+                    <a href="/menu?type=Veg{% if selected_category %}&category={{ selected_category }}{% endif %}" class="filter-btn {% if selected_type == 'Veg' %}active-filter{% endif %}">Veg</a>
+                    <a href="/menu?type=Non-Veg{% if selected_category %}&category={{ selected_category }}{% endif %}" class="filter-btn {% if selected_type == 'Non-Veg' %}active-filter{% endif %}">Non-Veg</a>
+                    <a href="/menu{% if selected_category %}?category={{ selected_category }}{% endif %}" class="filter-btn {% if not selected_type %}active-filter{% endif %}">All</a>
+
+
+
+                    <p><strong>Category:</strong></p>
+                    <a href="/menu?category=Breakfast{% if selected_type %}&type={{ selected_type }}{% endif %}" class="filter-btn {% if selected_category == 'Breakfast' %}active-filter{% endif %}">Breakfast</a>
+                    <a href="/menu?category=Lunch{% if selected_type %}&type={{ selected_type }}{% endif %}" class="filter-btn {% if selected_category == 'Lunch' %}active-filter{% endif %}">Lunch</a>
+                    <a href="/menu?category=Dinner{% if selected_type %}&type={{ selected_type }}{% endif %}" class="filter-btn {% if selected_category == 'Dinner' %}active-filter{% endif %}">Dinner</a>
+                </div>
+
+                </div>
+            </div>
+            
         </div>
-        <label for="searchBar" class="search-label">🔍 Search your favorite dish:</label>
-        <input type="text" id="searchBar" placeholder="Search for a dish..." />
-        <a href="/cart" class="cart-link">🛒 View Cart
-            <span class="cart-count">({{ session['cart']|length if session.get('cart') else 0 }})</span>
-        </a>
-        <div class = "menu-container">
+
+        {% if selected_type or selected_category %}
+        <p style="text-align:center; font-weight:bold; color:#d84315;">
+            Showing:
+            {% if selected_type %} {{ selected_type }} {% endif %}
+            {% if selected_category %} - {{ selected_category }} {% endif %}
+        </p>
+        {% endif %}
+        <div class="menu-container">
             {% for item in items %}
             <div class="menu-card">
-                <img src="{{ url_for('static', filename='images/' + item[3]) }}" alt="{{ item[1]  }}" >
-                <h2>{{ item[1]  }}</h2>
-                <p class="description"> {{ item[4] }}</p>
+                <img src="{{ url_for('static', filename='images/' + item[3]) }}" alt="{{ item[1] }}" loading="lazy">
+                <h2>{{ item[1] }}</h2>
+                <p class="description">{{ item[4]|safe }}</p>
                 <p class="price"><span class="rupee">₹</span> {{ item[2] }}</p>
                 <form method="POST" action="/add_to_cart">
-                    <input type="hidden" name="item_id" value="{{ item[0]}}">
-                    <button type="submit">Add to Carts</button>
+                    <input type="hidden" name="item_id" value="{{ item[0] }}">
+                    <button type="submit">Add to Cart</button>
                 </form>
             </div>
             {% endfor %}
@@ -40,13 +74,18 @@
 
 <script>
     const searchBar = document.getElementById('searchBar');
-    searchBar.addEventListener('keyup', function() {
-        const query = searchBar.value.toLowerCase();
-        const cards = document.getElementsByClassName('menu-card');
+    const cards = document.getElementsByClassName('menu-card');
+    let debounceTimer;
 
-        for(let card of cards) {
-            const title = card.querySelector('h2').textContent.toLowerCase();
-            card.style.display = title.includes(query) ? 'block' : 'none';
-        }
-    } );
+    searchBar.addEventListener('keyup', function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function ()  {
+            const query = searchBar.value.toLowerCase();
+
+            for (let card of cards) {
+                const title = card.querySelector('h2').textContent.toLowerCase();
+                card.style.display = title.includes(query) ? 'block' : 'none';
+            }
+        }, 300);
+    });
 </script>

@@ -14,7 +14,6 @@
         <h1>Select Your Seat</h1>
         <form method="POST" action="/reserve_seat">
             <p>Total seats loaded: {{seats|length }}</p>
-            {% set available_seats = seats | selectattr('status', 'equalto', 'available' | list %)}
             {% if available_seats | length == 0 %}
                 <p>No seats available at the moment.</p>
             {% endif %}

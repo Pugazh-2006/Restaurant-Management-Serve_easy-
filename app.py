@@ -2,6 +2,7 @@ from flask import Flask, render_template,request,redirect,session
 import os
 import sqlite3
 BASE = os.path.join(os.path.dirname(__file__), 'Restaurant-Management-Serve_easy-')
+from flask_caching import Cache 
 
 app = Flask(
 	__name__,
@@ -9,6 +10,7 @@ app = Flask(
 	template_folder=os.path.join(BASE, 'templates'),
 )
 app.secret_key = 'your_secret_key'
+cache = Cache(app, config={'CACHE_TYPE':'simple'})
 
 @app.route('/', methods=['GET','POST'])
 def login():
@@ -76,16 +78,32 @@ def forgot_password():
 def menu():
 	if 'user_id' not in session:
 		return redirect('/')
+	food_type = request.args.get('type')
+
+	category = request.args.get('category')
+
 	conn = sqlite3.connect('restaurant.db')
 	cursor = conn.cursor()
-	cursor.execute("SELECT * FROM menu_items")
+	
+	query = "SELECT id, name, price, image, description FROM menu_items WHERE 1=1"
+	params = []
+	if food_type:
+		query += " AND type = ?"
+		params.append(food_type)
+	if category:
+		query += " AND category = ?"
+		params.append(category)
+	query += " LIMIT 30"
+	cursor.execute(query, params)
+
 	items = []
 	for row in cursor.fetchall():
-		image = row[3].strip() if row[3] and row[3].strip() else 'masala_dosa.jpg'
+		image = row[3].strip() if row[3] and row[3].strip() else 'masala_dosa.webp'
 		description = row[4] if len(row) > 4 else ''
 		items.append((row[0], row[1], row[2], image, description))
+	
 	conn.close()
-	return render_template('menu.html', items=items)
+	return render_template('menu.html', items=items, selected_type = food_type, selected_category=category)
 
 @app.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
@@ -109,8 +127,8 @@ def cart():
 	total = 0
 
 	for item_id, quantity in session['cart'].items():
-		item_id = int(item_id)
-		cursor.execute("SELECT id, name, price, image FROM menu_items WHERE id = ?", (item_id, ))
+		item_id = tuple(map(int, session['cart'].keys()))
+		cursor.execute(f"SELECT id, name, price, image FROM menu_items WHERE id IN ({','.join(['?']*len(item_id))})", item_id)
 		item = cursor.fetchone()
 		if item:
 			subtotal = item[2] * quantity 
@@ -154,7 +172,7 @@ def remove_from_cart():
 def logout():
 	session.clear()
 	return redirect('/')
-
+@cache.cached(timeout=60)
 @app.route('/reserve_seat', methods=["GET"])
 def show_seats():
 	conn = sqlite3.connect('restaurant.db')
