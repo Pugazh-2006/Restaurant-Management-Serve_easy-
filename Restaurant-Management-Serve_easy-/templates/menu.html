@@ -44,10 +44,8 @@
 
                 </div>
             </div>
-            
-        </div>
 
-        {% if selected_type or selected_category %}
+             {% if selected_type or selected_category %}
         <p style="text-align:center; font-weight:bold; color:#d84315;">
             Showing:
             {% if selected_type %} {{ selected_type }} {% endif %}
@@ -68,6 +66,10 @@
             </div>
             {% endfor %}
         </div>
+            
+        </div>
+
+       
     </div>
 </body>
 </html>
