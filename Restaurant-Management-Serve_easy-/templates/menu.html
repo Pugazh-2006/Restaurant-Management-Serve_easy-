@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-
 </head>
 <body>
     <div class="menu-page">
@@ -15,7 +14,7 @@
             </div>
 
             <div class="header-center">
-                <label for="searchBar" class="">🔍 Search your favorite dish:</label>
+                <label for="searchBar">🔍 Search your favorite dish:</label>
                 <input type="text" id="searchBar" placeholder="Search for a dish..." />
             </div>
 
@@ -27,31 +26,47 @@
                 <a href="/cart" class="cart-link">🛒 View Cart
                     <span class="cart-count">({{ session['cart']|length if session.get('cart') else 0 }})</span>
                 </a>
-
-                <div class="filter-buttons">
-                    <p><strong>Type:</strong></p>
-                    <a href="/menu?type=Veg{% if selected_category %}&category={{ selected_category }}{% endif %}" class="filter-btn {% if selected_type == 'Veg' %}active-filter{% endif %}">Veg</a>
-                    <a href="/menu?type=Non-Veg{% if selected_category %}&category={{ selected_category }}{% endif %}" class="filter-btn {% if selected_type == 'Non-Veg' %}active-filter{% endif %}">Non-Veg</a>
-                    <a href="/menu{% if selected_category %}?category={{ selected_category }}{% endif %}" class="filter-btn {% if not selected_type %}active-filter{% endif %}">All</a>
-
-
-
-                    <p><strong>Category:</strong></p>
-                    <a href="/menu?category=Breakfast{% if selected_type %}&type={{ selected_type }}{% endif %}" class="filter-btn {% if selected_category == 'Breakfast' %}active-filter{% endif %}">Breakfast</a>
-                    <a href="/menu?category=Lunch{% if selected_type %}&type={{ selected_type }}{% endif %}" class="filter-btn {% if selected_category == 'Lunch' %}active-filter{% endif %}">Lunch</a>
-                    <a href="/menu?category=Dinner{% if selected_type %}&type={{ selected_type }}{% endif %}" class="filter-btn {% if selected_category == 'Dinner' %}active-filter{% endif %}">Dinner</a>
-                </div>
-
-                </div>
+                <a href="/history" class="cart-link">🧾 Order History</a>
             </div>
+        </div>
 
-             {% if selected_type or selected_category %}
+        {% if seat or cart_items %}
+        <div class="order-summary-box">
+            <h3>🧾 Your Order Summary</h3>
+            {% if seat %}
+            <p><strong>Reserved Seat:</strong> {{ seat[0] }}</p>
+            {% endif %}
+            {% if cart_items %}
+            <ul>
+                {% for item in cart_items %}
+                <li>{{ item[0] }} — ₹{{ item[1] }}</li>
+                {% endfor %}
+            </ul>
+            <p><strong>Total:</strong> ₹{{ total }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="filter-buttons">
+            <p><strong>Type:</strong></p>
+            <a href="/menu?type=Veg{% if selected_category %}&category={{ selected_category }}{% endif %}" class="filter-btn {% if selected_type == 'Veg' %}active-filter{% endif %}">Veg</a>
+            <a href="/menu?type=Non-Veg{% if selected_category %}&category={{ selected_category }}{% endif %}" class="filter-btn {% if selected_type == 'Non-Veg' %}active-filter{% endif %}">Non-Veg</a>
+            <a href="/menu{% if selected_category %}?category={{ selected_category }}{% endif %}" class="filter-btn {% if not selected_type %}active-filter{% endif %}">All</a>
+
+            <p><strong>Category:</strong></p>
+            <a href="/menu?category=Breakfast{% if selected_type %}&type={{ selected_type }}{% endif %}" class="filter-btn {% if selected_category == 'Breakfast' %}active-filter{% endif %}">Breakfast</a>
+            <a href="/menu?category=Lunch{% if selected_type %}&type={{ selected_type }}{% endif %}" class="filter-btn {% if selected_category == 'Lunch' %}active-filter{% endif %}">Lunch</a>
+            <a href="/menu?category=Dinner{% if selected_type %}&type={{ selected_type }}{% endif %}" class="filter-btn {% if selected_category == 'Dinner' %}active-filter{% endif %}">Dinner</a>
+        </div>
+
+        {% if selected_type or selected_category %}
         <p style="text-align:center; font-weight:bold; color:#d84315;">
             Showing:
             {% if selected_type %} {{ selected_type }} {% endif %}
             {% if selected_category %} - {{ selected_category }} {% endif %}
         </p>
         {% endif %}
+
         <div class="menu-container">
             {% for item in items %}
             <div class="menu-card">
@@ -66,10 +81,6 @@
             </div>
             {% endfor %}
         </div>
-            
-        </div>
-
-       
     </div>
 </body>
 </html>
@@ -81,9 +92,8 @@
 
     searchBar.addEventListener('keyup', function () {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(function ()  {
+        debounceTimer = setTimeout(function () {
             const query = searchBar.value.toLowerCase();
-
             for (let card of cards) {
                 const title = card.querySelector('h2').textContent.toLowerCase();
                 card.style.display = title.includes(query) ? 'block' : 'none';

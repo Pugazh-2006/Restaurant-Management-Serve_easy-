@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .admin-navbar {
+            background-color: #004d40;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .admin-navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .admin-navbar a:hover {
+            text-decoration: underline;
+        }
+
+        .order-card {
+            background-color: #fff3e0;
+            border: 1px solid #ffb74d;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .admin-section h2 {
+            margin-top: 40px;
+            color: #00796b;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .admin-card {
+            background-color: #fff8e1;
+            border: 1px solid #ffcc80;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .wide-card {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .flash-message {
+            background-color: #d0f0c0;
+            border: 1px solid #66bb6a;
+            padding: 10px;
+            margin: 15px auto;
+            max-width: 600px;
+            border-radius: 6px;
+            color: #2e7d32;
+            text-align: center;
+        }
+
+        .revenue-summary {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #4e342e;
+        }
+
+        .restore-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .restore-btn:hover {
+            background-color: #388e3c;
+        }
+
+        .action-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-page">
+
+
+    <nav class="admin-navbar">
+        <div>Welcome, {{ session['username'] }} (Admin)</div>
+        <div>
+            <a href="#seats">Seats</a>
+            <a href="#reserve">Reserve</a>
+            <a href="#menu">Menu</a>
+            <a href="#deleted">Deleted Items</a>
+            <a href="#orders">Orders</a>
+            <a href="#stats">Stats</a>
+            <a href="#report">Report</a>
+            <form method="GET" action="/logout" style="display:inline;">
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+
+    <section class="admin-section" id="seats">
+        <h2>Manage Seats</h2>
+        <div class="card-grid">
+            {% for seat in seats %}
+            <div class="admin-card">
+                <h3>Seat {{ seat[0] }}</h3>
+                <p>Status: <strong>{{ seat[1] }}</strong></p>
+                {% if seat[1] != 'available' %}
+                <form method="POST" action="/free_seat">
+                    <input type="hidden" name="seat_id" value="{{ seat[0] }}">
+                    <button type="submit" class="action-button">Free Seat</button>
+                </form>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+ 
+    <section class="admin-section" id="reserve">
+        <h2>Reserve Seat for User</h2>
+        <div class="admin-card wide-card">
+            <form method="POST" action="/admin_reserve_seat">
+                <input type="number" name="seat_id" placeholder="Seat ID" required>
+                <input type="text" name="username" placeholder="Username to reserve for" required>
+                <button type="submit" class="action-button">Reserve Seat</button>
+            </form>
+        </div>
+    </section>
+
+
+   <section class="admin-section" id="menu">
+    <h2>Update Menu</h2>
+
+    <!-- ✅ Add New Menu Item -->
+    <div class="admin-card wide-card">
+        <form method="POST" action="/add_item">
+            <input type="text" name="name" placeholder="Dish Name" required>
+            <input type="number" name="price" placeholder="Price" required>
+            <input type="text" name="description" placeholder="Description">
+            <input type="text" name="image" placeholder="Image filename">
+            <select name="type">
+                <option value="Veg">Veg</option>
+                <option value="Non-Veg">Non-Veg</option>
+            </select>
+            <select name="category">
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+            </select>
+            <button type="submit" class="action-button">Add Item</button>
+        </form>
+    </div>
+
+    <h3 style="margin-top:30px;">Active Menu Items</h3>
+    {% if active_menu %}
+    <div class="card-grid">
+        {% for item in active_menu %}
+        <div class="admin-card">
+            <h3>{{ item[1] }}</h3>
+            <p>₹{{ item[2] }} | {{ item[3] }} - {{ item[4] }}</p>
+            <form method="POST" action="/delete_menu_item" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                <input type="hidden" name="item_id" value="{{ item[0] }}">
+                <button type="submit" class="action-button">🗑️ Delete</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No active menu items found.</p>
+    {% endif %}
+</section>
+
+    <section class="admin-section" id="deleted">
+        <h2>Deleted Menu Items</h2>
+        {% if deleted_menu %}
+        <div class="card-grid">
+            {% for item in deleted_menu %}
+            <div class="admin-card">
+                <h3>{{ item[1] }}</h3>
+                <p>₹{{ item[2] }} | {{ item[3] }} - {{ item[4] }}</p>
+                <form method="POST" action="/restore_menu_item">
+                    <input type="hidden" name="item_id" value="{{ item[0] }}">
+                    <button type="submit" class="restore-btn">Restore</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No deleted items found.</p>
+        {% endif %}
+    </section>
+    <section class="admin-section" id="orders">
+        <h2>Pending Orders</h2>
+        {% if pending_orders %}
+            {% for order in pending_orders %}
+            <div class="order-card">
+                <p><strong>Order Item ID:</strong> {{ order[0] }}</p>
+                <p><strong>User:</strong> {{ order[1] }}</p>
+                <p><strong>Seat:</strong> {{ order[2] }}</p>
+                <p><strong>Item:</strong> {{ order[3] }} — ₹{{ order[4] }}</p>
+                <form method="POST" action="/mark_served">
+                    <input type="hidden" name="order_item_id" value="{{ order[0] }}">
+                    <input type="hidden" name="order_id" value="{{ order[5] }}">
+                    <button type="submit" class="action-button">Mark as Served</button>
+                </form>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No pending orders at the moment.</p>
+        {% endif %}
+    </section>
+
+
+    <section class="admin-section" id="stats">
+        <h2>Today's Dish Orders</h2>
+        {% if dish_counts %}
+            <div class="card-grid">
+                {% for dish in dish_counts %}
+                <div class="admin-card">
+                    <h3>{{ dish[0] }}</h3>
+                    <p>Ordered: <strong>{{ dish[1] }}</strong> times</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% if total_revenue %}
+            <div class="revenue-summary">
+                Total Revenue Today: ₹{{ total_revenue }}
+            </div>
+            {% endif %}
+        {% else %}
+            <p>No orders placed today.</p>
+        {% endif %}
+    </section>
+
+    <section class="admin-section" id="report">
+        <h2>Download Sales Report</h2>
+        <div class="admin-card wide-card">
+            <form method="POST" action="/download_report">
+                <label for="range">Select Time Range:</label>
+                <select name="range" id="range">
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                </select>
+                <button type="submit" class="action-button">Download Excel</button>
+            </form>
+        </div>
+    </section>
+
+</div>
+</body>
+</html>                
+
+<script>
+    const sections = document.querySelectorAll('.admin-section');
+    const navLinks = document.querySelectorAll('.admin-navbar a');
+
+
+    sections.forEach(section => section.style.display = 'none');
+    document.getElementById('orders').style.display = 'block';
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+
+            sections.forEach(section => section.style.display = 'none');
+            document.getElementById(targetId).style.display = 'block';
+        });
+    });
+</script>

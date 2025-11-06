@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to ServeEasy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="landing">
+
+    <nav class="navbar">
+        <div class="brand">ServeEasy</div>
+        <input type="checkbox" id="menu-toggle">
+        <label for="menu-toggle" class="hamburger">&#9776;</label>
+        <div class="nav-links-container">
+            <div class="nav-links">
+                <a href="/login">User Login</a>
+                <a href="/register">Register</a>
+                <a href="/admin">Admin Panel</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="landing-container">
+        <h1>Welcome to ServeEasy</h1>
+        <p class="tagline">Smart Dine-In Management for Modern Restaurants</p>
+
+        <p class="description1">
+            ServeEasy helps restaurants manage seat reservations, orders, and admin tasks with ease,
+            providing a seamless experience for both customers and staff.
+        </p>
+        <p class="description1">
+            Whether you're a customer looking to dine in or an admin managing the floor,
+            our system is built to serve you better.
+        </p>
+    </div>
+
+
+    <div class="features">
+        <div class="feature-box">
+            <i class='bx bx-chair'></i>
+            <h3>Seat Reservation</h3>
+            <p>Choose your seat, add it to your cart, and reserve it after payment.</p>
+        </div>
+        <div class="feature-box">
+            <i class='bx bx-food-menu'></i>
+            <h3>Menu & Orders</h3>
+            <p>Browse dishes, place orders, and track your selections in real time.</p>
+        </div>
+        <div class="feature-box">
+            <i class='bx bx-bar-chart-alt'></i>
+            <h3>Admin Dashboard</h3>
+            <p>Monitor reservations, dish counts, and revenue with actionable insights.</p>
+        </div>
+    </div>
+
+    <div class="footer">© 2025 ServeEasy Restaurant System</div>
+
+</body>
+</html>

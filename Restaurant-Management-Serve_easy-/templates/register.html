@@ -10,6 +10,9 @@
 </head>
 <body class=" login-page">
     <div class = "wraper">
+        {% if error %}
+            <p style="color: rgb(230, 51, 31); font-weight: bold;">{{ error }}</p>
+        {% endif %}
         <form method ="POST" action="/register">
             <h1>Register</h1>
             <div class="input-box">

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .summary-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 25px;
+            background-color: #f9fbe7;
+            border: 1px solid #cddc39;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .summary-container h2 {
+            text-align: center;
+            color: #00796b;
+            margin-bottom: 20px;
+        }
+        .summary-container p,
+        .summary-container li {
+            font-size: 16px;
+            margin: 8px 0;
+        }
+        .summary-container ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        .confirm-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 25px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .confirm-button:hover {
+            background-color: #004d40;
+        }
+        .back-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-button a {
+            color: #00796b;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="summary-container">
+        <h2>🧾 Order Summary</h2>
+        <p><strong>User:</strong> {{ username }}</p>
+        <p><strong>Reserved Seat:</strong> {{ seat[0] if seat else 'None' }}</p>
+        <hr>
+        <h3>Items in Cart:</h3>
+        <ul>
+            {% for item in items %}
+            <li>{{ item[0] }} — ₹{{ item[1] }}</li>
+            {% endfor %}
+        </ul>
+        <p><strong>Total:</strong> ₹{{ total }}</p>
+
+        <form method="POST" action="/confirm_order">
+            <button type="submit" class="confirm-button">Confirm Order</button>
+        </form>
+
+        <div class="back-button">
+            <a href="/menu">← Back to Menu</a>
+        </div>
+    </div>
+</body>
+</html>

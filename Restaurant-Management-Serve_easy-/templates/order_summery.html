@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="menu-page">
+        <h2 style="text-align:center; color:#00796b;">Order Summary</h2>
+        <div class="menu-card wide-card">
+            <p><strong>User:</strong> {{ username }}</p>
+            <p><strong>Reserved Seat:</strong> {{ seat[0] if seat else 'None' }}</p>
+            <hr>
+            <h3>Items in Cart:</h3>
+            <ul>
+                {% for item in items %}
+                <li>{{ item[0] }} — ₹{{ item[1] }}</li>
+                {% endfor %}
+            </ul>
+            <hr>
+            <p><strong>Total:</strong> ₹{{ total }}</p>
+            <p style="color:green;">✅ Your reservation and order have been confirmed!</p>
+        </div>
+    </div>
+</body>
+</html>

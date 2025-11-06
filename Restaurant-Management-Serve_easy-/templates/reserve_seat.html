@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservation</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .seat.selected {
+            background-color: #ff9800;
+            color: white;
+            font-weight: bold;
+            border: 2px solid #e65100;
+        }
+    </style>
 </head>
 <body class="reserve_body">
     <div class="seat-page">
@@ -13,7 +21,7 @@
         </header>
         <h1>Select Your Seat</h1>
         <form method="POST" action="/reserve_seat">
-            <p>Total seats loaded: {{seats|length }}</p>
+            <p>Total seats loaded: {{ seats|length }}</p>
             {% if available_seats | length == 0 %}
                 <p>No seats available at the moment.</p>
             {% endif %}
@@ -28,5 +36,19 @@
             <button type="submit" class="reserve_button">Confirm Reservation</button>
         </form>
     </div>
+
+    <script>
+        const seatLabels = document.querySelectorAll('.seat-grid .seat');
+
+        seatLabels.forEach(label => {
+            const input = label.querySelector('input[type="radio"]');
+            input.addEventListener('change', () => {
+                // Remove 'selected' class from all seats
+                seatLabels.forEach(l => l.classList.remove('selected'));
+                // Add 'selected' class to the clicked one
+                label.classList.add('selected');
+            });
+        });
+    </script>
 </body>
 </html>
