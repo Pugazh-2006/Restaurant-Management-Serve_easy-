@@ -9,20 +9,53 @@ from flask_caching import Cache
 from datetime import datetime, timedelta
 
 app = Flask(
-	__name__,
-	static_folder=os.path.join(BASE, 'static'),
-	template_folder=os.path.join(BASE, 'templates'),
+    __name__,
+    static_folder=os.path.join(BASE, 'static'),
+    template_folder=os.path.join(BASE, 'templates'),
 )
-app.secret_key = 'your_secret_key'
+# Use a strong secret key for production
+app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')
 cache = Cache(app, config={'CACHE_TYPE':'simple'})
+
+def init_db():
+    try:
+        conn = sqlite3.connect('restaurant.db')
+        cursor = conn.cursor()
+        
+        # Create users table if it doesn't exist
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            email TEXT UNIQUE,
+            role TEXT DEFAULT 'user'
+        )
+        ''')
+        
+        # Check if admin user exists, if not create one
+        cursor.execute("SELECT * FROM users WHERE username = 'admin'")
+        if not cursor.fetchone():
+            cursor.execute('''
+            INSERT INTO users (username, password, role)
+            VALUES (?, ?, ?)
+            ''', ('admin', 'admin123', 'admin'))
+        
+        conn.commit()
+    except sqlite3.Error as e:
+        print(f"Database initialization error: {e}")
+    finally:
+        conn.close()
+
+# Initialize database on startup
+init_db()
 
 @app.route('/')
 def home():
-    if 'username' in session:
-        if session['role'] == 'admin':
+    if 'username' in session and 'role' in session:
+        if session.get('role') == 'admin':
             return redirect('/admin')
-        else:
-            return redirect('/menu')
+        return redirect('/menu')
     return render_template('landing.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
